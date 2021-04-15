@@ -15,33 +15,32 @@ typedef struct		s_env
 	int				ttd;
 	int				tte;
 	int				tts;
-	int				fork_nb;
 }					t_env;
 
 typedef struct		s_philo
 {
 	t_env			*env;
-	pthread_t		*thread;
-	pthread_mutex_t	*mutex;
-	pthread_mutex_t	thread_sync;
-	pthread_t		current_thread_id;
-	int				i;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	int				id;
+	struct timeval	time_start;
+	long			timestamp;
 }					t_philo;
 
 /*
 ** init
 */
 
-int					main_init(t_philo **philo, t_env **env,
+void				set_struct_null(t_philo **philo, t_env **env,
 				pthread_t **thread, pthread_mutex_t **mutex);
 
-int					init_env(int ac, char *av[], t_env *env);
+int					main_init(t_philo **philo, t_env **env, int ac, char *av[]);
 
 int					thread_mutex_init(t_env *env, pthread_t **thread,
 				pthread_mutex_t **mutex);
 
 void				philo_init(t_philo *philo, t_env *env,
-				pthread_t *thread, pthread_mutex_t *mutex);
+				pthread_mutex_t *mutex);
 
 /*
 ** utils

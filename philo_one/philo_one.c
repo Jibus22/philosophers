@@ -1,42 +1,36 @@
 #include "philo_one.h"
 
-int	get_philo_id(t_philo *philo)
+void	get_timestamp(struct timeval tv_start, long *time_stamp)
 {
-	int	i;
+	struct timeval	tv;
 
-	i = 0;
-	while (++i < (philo->env->philo_nb + 1))
-		if (philo->thread[i] == philo->current_thread_id)
-			return (i);
-	return (-1);
+	gettimeofday(&tv, NULL);
 }
 
 void	*routine(void *arg)
 {
 	t_philo	*philo;
-	int		philo_id;
 
 	philo = (t_philo *)arg;
-	pthread_mutex_lock(&(philo->mutex[0]));
-	philo_id = get_philo_id(philo);
-	printf("curr_th_id: %lu\t\t\tph_id: %3d\n",
-			(unsigned long)philo->current_thread_id, philo_id);
+	printf("id: %d\n", philo->id);
+	printf("sec: %ld\tusec: %ld\n", (long)(philo->time_start.tv_sec),
+			(long)(philo->time_start.tv_usec));
 	fflush(stdout);
-	pthread_mutex_unlock(&(philo->mutex[0]));
+	get_timestamp(philo->time_start, &(philo->timestamp));
 	return (NULL);
 }
 
-int	launch_thread(t_philo *philo)
+int	launch_thread(t_env *env, pthread_t *thread, t_philo *philo)
 {
-	int			i;
+	struct timeval	tv;
+	int				i;
 
-	i = 0;
-	while (++i < (philo->env->philo_nb + 1))
+	gettimeofday(&tv, NULL);
+	i = -1;
+	while (++i < env->philo_nb)
 	{
-		pthread_mutex_lock(&(philo->mutex[0]));
-		pthread_create(&(philo->thread[i]), NULL, routine, philo);
-		philo->current_thread_id = philo->thread[i];
-		pthread_mutex_unlock(&(philo->mutex[0]));
+		philo[i].time_start = tv;
+		pthread_create(&(thread[i]), NULL, routine, &(philo[i]));
 	}
 	return (0);
 }
@@ -45,8 +39,8 @@ int	exit_thread(t_env *env, pthread_t *thread)
 {
 	int	i;
 
-	i = 0;
-	while (++i < (env->philo_nb + 1))
+	i = -1;
+	while (++i < env->philo_nb)
 		pthread_join(thread[i], NULL);
 	return (0);
 }
@@ -58,18 +52,23 @@ int	main(int ac, char *av[])
 	pthread_t		*thread;
 	pthread_mutex_t	*mutex;
 
-	if (main_init(&philo, &env, &thread, &mutex) == -1)
+	set_struct_null(&philo, &env, &thread, &mutex);
+	if (main_init(&philo, &env, ac, av) == -1)
 		return (main_exit(philo, env, thread, mutex));
-	if (init_env(ac, av, env) == -1)
-		return (main_exit(philo, env, thread, mutex));
-	print_env(env);
 	if (thread_mutex_init(env, &thread, &mutex) == -1)
 		return (main_exit(philo, env, thread, mutex));
-	philo_init(philo, env, thread, mutex);
-	launch_thread(philo);
-	print_thread(env, thread);
+	philo_init(philo, env, mutex);
+	launch_thread(env, thread, philo);
 	exit_thread(env, thread);
 	free(thread);
-	//system("leaks philo_one");
 	return (0);
 }
+
+/*
+
+	//print_env(env);
+	//print_thread(env, thread);
+	//system("leaks philo_one");
+
+
+*/
