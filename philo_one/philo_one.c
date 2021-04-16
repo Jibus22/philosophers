@@ -4,23 +4,23 @@ long	get_timestamp(struct timeval tv_start)
 {
 	struct timeval	now;
 	long			seconds;
-	long			u_seconds;
-	long			time;
+	long			timestamp;
 
 	gettimeofday(&now, NULL);
 	seconds = (long)(now.tv_sec) - (long)(tv_start.tv_sec);
-	u_seconds = (long)(now.tv_usec);
-	time = (1000000 * seconds) + u_seconds;
-	time = time - (long)(tv_start.tv_usec);
-	time /= 1000;
-	return (time);
+	timestamp = (1000000 * seconds) + (long)(now.tv_usec)
+		- (long)(tv_start.tv_usec);
+	timestamp /= 1000;
+	return (timestamp);
 }
 
-void	print_new_status(long timestamp, char *id, int msg_code, char *buf)
+void	print_new_status(t_philo *philo, char *id, int msg_code, char *buf)
 {
 	char	*tmp_str_timestamp;
+	long	timestamp;
 
 	memset(buf, 0, STAT_BUF_LEN);
+	timestamp = get_timestamp(philo->time_start);
 	tmp_str_timestamp = ft_itoa((int)timestamp);
 	ft_strlcpy(buf, tmp_str_timestamp, STAT_BUF_LEN);
 	free(tmp_str_timestamp);
@@ -35,6 +35,8 @@ void	print_new_status(long timestamp, char *id, int msg_code, char *buf)
 		ft_strlcat(buf, " has died\n", STAT_BUF_LEN);
 	else if (msg_code == THINKING)
 		ft_strlcat(buf, " is thinking\n", STAT_BUF_LEN);
+	if (philo->env->living == DEAD)
+		return ;
 	write(1, buf, STAT_BUF_LEN);
 	fflush(stdout);
 }
@@ -50,11 +52,10 @@ int		am_i_dead(t_philo *philo, long time_stamp)
 	}
 	else
 		fresh_time_stamp = time_stamp;
-	if ((fresh_time_stamp - philo->last_lunch) > philo->env->ttd)
+	if ((fresh_time_stamp - philo->last_lunch) > (long)philo->env->ttd)
 	{
 		philo->state = DIED;
-		print_new_status(philo->timestamp, philo->str_id, DEAD,
-				philo->status_buf);
+		print_new_status(philo, philo->str_id, DIED, philo->status_buf);
 		philo->env->living = DEAD;
 		return (YES_IM_SORRY);
 	}
@@ -62,24 +63,74 @@ int		am_i_dead(t_philo *philo, long time_stamp)
 		return (NOT_YET);
 }
 
-int	sleep_but_listen(t_philo *philo, int duration)
-{	
-	int	div;
-	int	mod;
+int	micro_sleeps(t_philo *philo, int div, int mod, long time_end)
+{
+	long	timestamp;
+	long	end_of_sleep;
 
-	div = duration / SLEEP_STEP;
-	mod = duration % SLEEP_STEP;
 	while (div--)
 	{
-		if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
-			return (DIED);
 		usleep(SLEEP_STEP * 1000);
+		if (div < 3)
+		{
+			timestamp = get_timestamp(philo->time_start);
+			end_of_sleep = time_end - timestamp;
+			if (end_of_sleep < SLEEP_STEP)
+			{
+				usleep(end_of_sleep * 1000);
+				div = 0;
+				mod = 0;
+			}
+		}
+		if (philo->env->living == DEAD)
+			return (-1);
 	}
-	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
-		return (DIED);
 	if (mod)
 		usleep(mod * 1000);
 	return (0);
+}
+
+int	sleep_but_listen(t_philo *philo, int duration)
+{	
+	int		div;
+	int		mod;
+	long	timestamp;
+	long	time_end;
+	long	dead_limit;
+
+	dead_limit = philo->last_lunch + (long)philo->env->ttd;
+	timestamp = get_timestamp(philo->time_start);
+	time_end = timestamp + duration;
+	if (time_end > dead_limit)
+	{
+		duration = (int)dead_limit - (int)timestamp;
+		time_end = dead_limit;
+		div = duration / SLEEP_STEP;
+		mod = duration % SLEEP_STEP;
+	}
+	else
+	{
+		div = duration / SLEEP_STEP;
+		mod = duration % SLEEP_STEP;
+	}
+	micro_sleeps(philo, div, mod, time_end);
+	if (am_i_dead(philo, -1) == YES_IM_SORRY)
+		return (DIED);
+	return (0);
+}
+
+void	unlock_n_return(t_philo *philo, char c)
+{
+	if (c == 'r')
+		pthread_mutex_unlock(philo->right_fork);
+	else if (c == 'l')
+		pthread_mutex_unlock(philo->left_fork);
+	else if (c == 'b')
+	{
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->left_fork);
+	}
+	return ;
 }
 
 //Dangers : le thread s'arrête en attendant que le mutex soit libre
@@ -88,37 +139,31 @@ int	sleep_but_listen(t_philo *philo, int duration)
 void	wanna_eat(t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
-	if (am_i_dead(philo, -1) == YES_IM_SORRY)
-	{
-		pthread_mutex_unlock(philo->right_fork);
-		return ;
-	}
-	print_new_status(philo->timestamp, philo->str_id, TAKE_FORK,
-			philo->status_buf);
+	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
+		return (unlock_n_return(philo, 'r'));
+	print_new_status(philo, philo->str_id, TAKE_FORK, philo->status_buf);
 	pthread_mutex_lock(philo->left_fork);
-	if (am_i_dead(philo, -1) == YES_IM_SORRY)
-	{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
-		return ;
-	}
-	print_new_status(philo->timestamp, philo->str_id, TAKE_FORK,
-			philo->status_buf);
+	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
+		return (unlock_n_return(philo, 'b'));
+	print_new_status(philo, philo->str_id, TAKE_FORK, philo->status_buf);
+	philo->last_lunch = get_timestamp(philo->time_start);
 	philo->state = EATING;
-	print_new_status(philo->timestamp, philo->str_id, EATING,
-			philo->status_buf);
-	sleep_but_listen(philo, philo->env->tte);
+	print_new_status(philo, philo->str_id, EATING, philo->status_buf);
+	if (sleep_but_listen(philo, philo->env->tte) == DIED
+			|| philo->env->living == DEAD)
+		return (unlock_n_return(philo, 'b'));
+	//philo->last_lunch = get_timestamp(philo->time_start);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
-	if (philo->state != DIED)
-		philo->state = SLEEPING;
+	philo->state = SLEEPING;
 }
 
 void	going_to_sleep(t_philo *philo)
 {
-	sleep_but_listen(philo, philo->env->tts);
-	if (philo->state != DIED)
-		philo->state = THINKING;
+	if (sleep_but_listen(philo, philo->env->tts) == DIED
+			|| philo->env->living == DEAD)
+		return ;
+	philo->state = THINKING;
 }
 
 void	*routine(void *arg)
@@ -132,14 +177,12 @@ void	*routine(void *arg)
 			break ;
 		if (philo->state == THINKING)
 		{
-			print_new_status(philo->timestamp, philo->str_id, THINKING,
-					philo->status_buf);
+			print_new_status(philo, philo->str_id, THINKING, philo->status_buf);
 			wanna_eat(philo);//try to find forks, eat then set status to sleeping
 		}
 		else if (philo->state == SLEEPING)
 		{
-			print_new_status(philo->timestamp, philo->str_id, SLEEPING,
-					philo->status_buf);
+			print_new_status(philo, philo->str_id, SLEEPING, philo->status_buf);
 			going_to_sleep(philo);//sleep & check if philo is died. Then stat think
 		}
 	}
@@ -149,7 +192,7 @@ void	*routine(void *arg)
 /*
 		usleep(344910);
 		get_timestamp(philo->time_start, &(philo->timestamp));
-		print_new_status(philo->timestamp, philo->str_id, TAKE_FORK,
+		print_new_status(philo, philo->str_id, TAKE_FORK,
 			philo->status_buf);
 
 */
@@ -163,7 +206,7 @@ int	launch_thread(t_env *env, pthread_t *thread, t_philo *philo)
 	i = -1;
 	while (++i < env->philo_nb)
 	{
-		usleep(4060);
+		usleep(1060);
 		philo[i].time_start = start_time_value;
 		pthread_create(&(thread[i]), NULL, routine, &(philo[i]));
 	}

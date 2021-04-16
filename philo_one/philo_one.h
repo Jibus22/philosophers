@@ -27,7 +27,7 @@
 # define YES_IM_SORRY 1
 # define NOT_YET 0
 
-# define SLEEP_STEP 5
+# define SLEEP_STEP 60
 
 
 /*
