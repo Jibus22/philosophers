@@ -15,6 +15,6 @@ int	print_thread(t_env *env, pthread_t *thread)
 
 void	print_env(t_env *env)
 {
-	printf("philo_nb: %6d\tttd: %6d\ttte: %6d\ttts: %6d\n",
-			env->philo_nb, env->ttd, env->tte, env->tts);
+	printf("philo_nb: %6d\tttd: %6d\ttte: %6d\ttts: %6d\tph_living: %d\n",
+	env->philo_nb, env->ttd, env->tte, env->tts, env->living);
 }

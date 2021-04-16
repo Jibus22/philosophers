@@ -18,6 +18,7 @@ static int	init_env(int ac, char *av[], t_env *env)
 			return (-1);
 		envir += (int)1;
 	}
+	*envir = ALL_ALIVE;
 	if (env->philo_nb == 0)
 		return (-1);
 	return (0);
@@ -58,6 +59,7 @@ int			thread_mutex_init(t_env *env, pthread_t **thread,
 void		philo_init(t_philo *philo, t_env *env, pthread_mutex_t *mutex)
 {
 	t_philo			*philo_cpy;
+	char			*temp_id;
 	int				i;
 
 	i = -1;
@@ -66,6 +68,12 @@ void		philo_init(t_philo *philo, t_env *env, pthread_mutex_t *mutex)
 		philo_cpy = &(philo[i]);
 		philo_cpy->env = env;
 		philo_cpy->id = i + 1;
+		temp_id = ft_itoa(philo_cpy->id);
+		philo_cpy->str_id[0] = ' ';
+		ft_strlcpy(&(philo_cpy->str_id[1]), temp_id, 5);
+		free(temp_id);
+		philo_cpy->state = THINKING;
+		philo_cpy->last_lunch = 0;
 		if (i == (env->philo_nb - 1))
 			philo_cpy->left_fork = &(mutex[0]);
 		else
