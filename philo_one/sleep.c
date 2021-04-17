@@ -1,5 +1,26 @@
 #include "philo_one.h"
 
+int			sleep_but_listen(t_philo *philo, int duration)
+{	
+	long	timestamp;
+	long	time_end;
+	long	rest;
+	int		first_part;
+
+	timestamp = get_timestamp(philo->time_start);
+	time_end = timestamp + (long)duration;
+	first_part = duration * 80 / 100;
+	usleep(first_part * 1000);
+	timestamp = get_timestamp(philo->time_start);
+	rest = time_end - timestamp;
+	if (rest > 0)
+		usleep(rest * 1000);
+	if (am_i_dead(philo, -1) == YES_IM_SORRY)
+		return (DIED);
+	return (0);
+}
+
+/*
 static int	micro_sleeps(t_philo *philo, int div, int mod, long time_end)
 {
 	long	timestamp;
@@ -55,4 +76,4 @@ int			sleep_but_listen(t_philo *philo, int duration)
 	if (am_i_dead(philo, -1) == YES_IM_SORRY)
 		return (DIED);
 	return (0);
-}
+}*/
