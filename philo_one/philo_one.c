@@ -35,7 +35,7 @@ void	print_new_status(t_philo *philo, char *id, int msg_code, char *buf)
 		ft_strlcat(buf, " has died\n", STAT_BUF_LEN);
 	else if (msg_code == THINKING)
 		ft_strlcat(buf, " is thinking\n", STAT_BUF_LEN);
-	if (philo->env->living == DEAD)
+	if (philo->env->living == DEAD && philo->state != DIED)
 		return ;
 	write(1, buf, STAT_BUF_LEN);
 	fflush(stdout);
@@ -54,9 +54,14 @@ int		am_i_dead(t_philo *philo, long time_stamp)
 		fresh_time_stamp = time_stamp;
 	if ((fresh_time_stamp - philo->last_lunch) > (long)philo->env->ttd)
 	{
-		philo->state = DIED;
+		if (philo->env->living == ALL_ALIVE)
+		{
+			philo->env->living = DEAD;
+			philo->state = DIED;
+		}
+		else
+			return (YES_IM_SORRY);
 		print_new_status(philo, philo->str_id, DIED, philo->status_buf);
-		philo->env->living = DEAD;
 		return (YES_IM_SORRY);
 	}
 	else
@@ -80,6 +85,7 @@ int	micro_sleeps(t_philo *philo, int div, int mod, long time_end)
 				usleep(end_of_sleep * 1000);
 				div = 0;
 				mod = 0;
+				return (0);
 			}
 		}
 		if (philo->env->living == DEAD)
@@ -146,9 +152,9 @@ void	wanna_eat(t_philo *philo)
 	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
 		return (unlock_n_return(philo, 'b'));
 	print_new_status(philo, philo->str_id, TAKE_FORK, philo->status_buf);
-	philo->last_lunch = get_timestamp(philo->time_start);
 	philo->state = EATING;
 	print_new_status(philo, philo->str_id, EATING, philo->status_buf);
+	philo->last_lunch = get_timestamp(philo->time_start);
 	if (sleep_but_listen(philo, philo->env->tte) == DIED
 			|| philo->env->living == DEAD)
 		return (unlock_n_return(philo, 'b'));
