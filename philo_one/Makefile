@@ -10,6 +10,9 @@ HEADERS = $(PATH_INCLUDE)/*.h
 INC = $(addprefix -I , $(PATH_INCLUDE))
 
 ##### FLAG #####
+PTHREAD_LIB = -lpthread
+
+##### FLAG #####
 CC = clang
 FLAGS = -Wall -Wextra -Werror
 
@@ -43,7 +46,7 @@ mk_objdir:
 
 $(NAME) : message $(OBJ)
 	@echo "\n$(END)$(BLUE)# Making $(NAME) #$(END)$(GREY)"
-	$(CC) -o $@ $(OBJ) $(PS_INSTRUCTIONS) $(LIBFT)
+	$(CC) -o $@ $(OBJ) $(PTHREAD_LIB)
 	@echo "\n$(END)$(GREEN)# $(NAME) is built #$(END)"
 
 message :
