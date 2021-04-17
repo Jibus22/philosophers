@@ -63,7 +63,6 @@ typedef struct		s_philo
 
 void				set_struct_null(t_philo **philo, t_env **env,
 				pthread_t **thread, pthread_mutex_t **mutex);
-
 int					main_init(t_philo **philo, t_env **env, int ac, char *av[]);
 
 int					thread_mutex_init(t_env *env, pthread_t **thread,
@@ -71,6 +70,18 @@ int					thread_mutex_init(t_env *env, pthread_t **thread,
 
 void				philo_init(t_philo *philo, t_env *env,
 				pthread_mutex_t *mutex);
+
+/*
+** run
+*/
+
+void				*routine(void *arg);
+int					sleep_but_listen(t_philo *philo, int duration);
+int					am_i_dead(t_philo *philo, long time_stamp);
+
+void				print_new_status(t_philo *philo, char *id,
+				int msg_code, char *buf);
+long				get_timestamp(struct timeval tv_start);
 
 /*
 ** utils
