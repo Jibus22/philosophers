@@ -1,57 +1,34 @@
 #include "philo_one.h"
 
-static int	micro_sleeps(t_philo *philo, int div, int mod, long time_end)
+int			micro_sleep(t_philo *philo, long end)
 {
 	long	timestamp;
-	long	end_of_sleep;
 
-	while (div--)
+	timestamp = get_timestamp(philo->time_start);
+	while (timestamp < end)
 	{
-		usleep(SLEEP_STEP * 1000);
-		if (div < 3)
-		{
-			timestamp = get_timestamp(philo->time_start);
-			end_of_sleep = time_end - timestamp;
-			if (end_of_sleep < SLEEP_STEP)
-			{
-				usleep(end_of_sleep * 1000);
-				div = 0;
-				mod = 0;
-				return (0);
-			}
-		}
-		if (philo->env->living == DEAD)
-			return (-1);
+		usleep(500);
+		timestamp = get_timestamp(philo->time_start);
 	}
-	if (mod)
-		usleep(mod * 1000);
 	return (0);
 }
 
 int			sleep_but_listen(t_philo *philo, int duration)
 {	
-	int		div;
-	int		mod;
 	long	timestamp;
 	long	time_end;
-	long	dead_limit;
+	int		first_part;
 
-	dead_limit = philo->last_lunch + (long)philo->env->ttd;
 	timestamp = get_timestamp(philo->time_start);
-	time_end = timestamp + duration;
-	if (time_end > dead_limit)
+	time_end = timestamp + (long)duration;
+	if ((philo->last_lunch + (long)philo->env->ttd) < time_end)
 	{
-		duration = (int)dead_limit - (int)timestamp;
-		time_end = dead_limit;
-		div = duration / SLEEP_STEP;
-		mod = duration % SLEEP_STEP;
+		time_end = philo->last_lunch + (long)philo->env->ttd;
+		duration = (int)time_end - (int)timestamp;
 	}
-	else
-	{
-		div = duration / SLEEP_STEP;
-		mod = duration % SLEEP_STEP;
-	}
-	micro_sleeps(philo, div, mod, time_end);
+	first_part = duration * 90 / 100;
+	usleep(first_part * 1000);
+	micro_sleep(philo, time_end);
 	if (am_i_dead(philo, -1) == YES_IM_SORRY)
 		return (DIED);
 	return (0);
