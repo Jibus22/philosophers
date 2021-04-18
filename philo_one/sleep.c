@@ -29,7 +29,7 @@ int			sleep_but_listen(t_philo *philo, int duration)
 	first_part = duration * 90 / 100;
 	usleep(first_part * 1000);
 	micro_sleep(philo, time_end);
-	if (am_i_dead(philo, -1) == YES_IM_SORRY)
-		return (DIED);
-	return (0);
+	if (am_i_dead(philo) == DEAD || philo->env->living == DEAD)
+		return (DEAD);
+	return (philo->state);
 }

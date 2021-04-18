@@ -11,7 +11,7 @@
 # include <sys/errno.h>
 
 /*
-** philo magic numbers
+** philo state
 */
 
 # define TAKE_FORK 1
@@ -24,10 +24,14 @@
 
 # define ALL_ALIVE 1
 # define DEAD 0
-# define YES_IM_SORRY 1
-# define NOT_YET 0
+# define NOT_YET 1
 
-# define SLEEP_STEP 60
+/*
+** forks state
+*/
+
+# define AVAILABLE 1
+# define USED 2
 
 
 /*
@@ -41,19 +45,22 @@ typedef struct		s_env
 	int				tte;
 	int				tts;
 	int				living;
+	char			*forks;
+	pthread_mutex_t	mtx_output;
 }					t_env;
 
 typedef struct		s_philo
 {
 	t_env			*env;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*mtx_rfork;
+	pthread_mutex_t	*mtx_lfork;
+	char			*right_fork;
+	char			*left_fork;
 	int				id;
 	char			str_id[6];
 	int				state;
 	char			status_buf[30];
 	struct timeval	time_start;
-	long			timestamp;
 	long			last_lunch;
 }					t_philo;
 
@@ -77,7 +84,7 @@ void				philo_init(t_philo *philo, t_env *env,
 
 void				*routine(void *arg);
 int					sleep_but_listen(t_philo *philo, int duration);
-int					am_i_dead(t_philo *philo, long time_stamp);
+int					am_i_dead(t_philo *philo);
 
 void				print_new_status(t_philo *philo, char *id,
 				int msg_code, char *buf);

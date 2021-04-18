@@ -1,17 +1,29 @@
 #include "philo_one.h"
 
-void	unlock_n_return(t_philo *philo, char c)
+int		try_to_take_forks(t_philo *philo)
 {
-	if (c == 'r')
-		pthread_mutex_unlock(philo->right_fork);
-	else if (c == 'l')
-		pthread_mutex_unlock(philo->left_fork);
-	else if (c == 'b')
+	while (philo->env->living == ALL_ALIVE)
 	{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
+		if (am_i_dead(philo) == DEAD)
+			return (DEAD);
+		if (*(philo->right_fork) == AVAILABLE
+			&& *(philo->left_fork) == AVAILABLE)
+		{
+			if (*(philo->right_fork) == USED)
+				continue ;
+			pthread_mutex_lock(philo->mtx_rfork);
+			*(philo->right_fork) = USED;
+			print_new_status(philo, philo->str_id, TAKE_FORK,
+				philo->status_buf);
+			pthread_mutex_lock(philo->mtx_lfork);
+			*(philo->left_fork) = USED;
+			print_new_status(philo, philo->str_id, TAKE_FORK,
+				philo->status_buf);
+			return (EATING);
+		}
+		usleep(100);
 	}
-	return ;
+	return (DEAD);
 }
 
 /*
@@ -20,33 +32,33 @@ void	unlock_n_return(t_philo *philo, char c)
 ** et de quitter ?
 */
 
-void	wanna_eat(t_philo *philo)
+int		wanna_eat(t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork);
-	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
-		return (unlock_n_return(philo, 'r'));
-	print_new_status(philo, philo->str_id, TAKE_FORK, philo->status_buf);
-	pthread_mutex_lock(philo->left_fork);
-	if (am_i_dead(philo, -1) == YES_IM_SORRY || philo->env->living == DEAD)
-		return (unlock_n_return(philo, 'b'));
-	print_new_status(philo, philo->str_id, TAKE_FORK, philo->status_buf);
-	philo->state = EATING;
+	philo->state = try_to_take_forks(philo);
+	if (philo->state != EATING)
+		return (DEAD);
 	print_new_status(philo, philo->str_id, EATING, philo->status_buf);
 	philo->last_lunch = get_timestamp(philo->time_start);
-	if (sleep_but_listen(philo, philo->env->tte) == DIED
-			|| philo->env->living == DEAD)
-		return (unlock_n_return(philo, 'b'));
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	philo->state = sleep_but_listen(philo, philo->env->tte);
+	*(philo->right_fork) = AVAILABLE;
+	pthread_mutex_unlock(philo->mtx_rfork);
+	*(philo->left_fork) = AVAILABLE;
+	pthread_mutex_unlock(philo->mtx_lfork);
+	if (philo->env->living == DEAD || philo->state == DEAD)
+		return (DEAD);
 	philo->state = SLEEPING;
+	return (philo->state);
 }
 
-void	going_to_sleep(t_philo *philo)
+int		go_to_sleep(t_philo *philo)
 {
-	if (sleep_but_listen(philo, philo->env->tts) == DIED
-			|| philo->env->living == DEAD)
-		return ;
+	print_new_status(philo, philo->str_id, SLEEPING, philo->status_buf);
+	philo->state = sleep_but_listen(philo, philo->env->tts);
+	if (philo->env->living == DEAD || philo->state == DEAD)
+		return (DEAD);
 	philo->state = THINKING;
+	print_new_status(philo, philo->str_id, THINKING, philo->status_buf);
+	return (philo->state);
 }
 
 void	*routine(void *arg)
@@ -54,18 +66,16 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	while (philo->env->living == ALL_ALIVE)
+	print_new_status(philo, philo->str_id, THINKING, philo->status_buf);
+	philo->last_lunch = get_timestamp(philo->time_start);
+	if (philo->id % 2 == 0)
+		usleep(1000);
+	while (philo->env->living == ALL_ALIVE && philo->state != DEAD)
 	{
-		if (philo->state == THINKING)
-		{
-			print_new_status(philo, philo->str_id, THINKING, philo->status_buf);
-			wanna_eat(philo);
-		}
-		else if (philo->state == SLEEPING)
-		{
-			print_new_status(philo, philo->str_id, SLEEPING, philo->status_buf);
-			going_to_sleep(philo);
-		}
+		if (wanna_eat(philo) == DEAD)
+			break ;
+		if (go_to_sleep(philo) == DEAD)
+			break ;
 	}
 	return (NULL);
 }

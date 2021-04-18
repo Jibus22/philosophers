@@ -1,5 +1,14 @@
 #include "philo_one.h"
 
+void		init_forks(char *forks, int nb)
+{
+	int		i;
+
+	i = -1;
+	while (++i < nb)
+		forks[i] = AVAILABLE;
+}
+
 static int	init_env(int ac, char *av[], t_env *env)
 {
 	int		i;
@@ -21,6 +30,11 @@ static int	init_env(int ac, char *av[], t_env *env)
 	*envir = ALL_ALIVE;
 	if (env->philo_nb == 0)
 		return (-1);
+	env->forks = (char *)malloc(sizeof(char) * env->philo_nb);
+	if (env->forks == NULL)
+		return (-1);
+	init_forks(env->forks, env->philo_nb);
+	pthread_mutex_init(&(env->mtx_output), NULL);
 	return (0);
 }
 
@@ -29,11 +43,13 @@ int			main_init(t_philo **philo, t_env **env, int ac, char *av[])
 	*env = (t_env *)malloc(sizeof(t_env) * 1);
 	if (!*env)
 		return (-1);
+	memset(*env, 0, sizeof(**env));
 	if (init_env(ac, av, *env) == -1)
 		return (-1);
 	*philo = (t_philo *)malloc(sizeof(t_philo) * (*env)->philo_nb);
 	if (!*philo)
 		return (-1);
+	memset(*philo, 0, sizeof(**philo));
 	return (0);
 }
 
@@ -56,6 +72,23 @@ int			thread_mutex_init(t_env *env, pthread_t **thread,
 	return (0);
 }
 
+void		give_forks(t_philo *philo_cpy, t_env *env,
+				pthread_mutex_t *mutex, int i)
+{
+	if (i == (env->philo_nb - 1))
+	{
+		philo_cpy->mtx_lfork = &(mutex[0]);
+		philo_cpy->left_fork = &(philo_cpy->env->forks[0]);
+	}
+	else
+	{
+		philo_cpy->mtx_lfork = &(mutex[i + 1]);
+		philo_cpy->left_fork = &(philo_cpy->env->forks[i + 1]);
+	}
+	philo_cpy->mtx_rfork = &(mutex[i]);
+	philo_cpy->right_fork = &(philo_cpy->env->forks[i]);
+}
+
 void		philo_init(t_philo *philo, t_env *env, pthread_mutex_t *mutex)
 {
 	t_philo			*philo_cpy;
@@ -74,11 +107,7 @@ void		philo_init(t_philo *philo, t_env *env, pthread_mutex_t *mutex)
 		free(temp_id);
 		philo_cpy->state = THINKING;
 		philo_cpy->last_lunch = 0;
-		if (i == (env->philo_nb - 1))
-			philo_cpy->left_fork = &(mutex[0]);
-		else
-			philo_cpy->left_fork = &(mutex[i + 1]);
-		philo_cpy->right_fork = &(mutex[i]);
+		give_forks(philo_cpy, env, mutex, i);
 	}
 }
 

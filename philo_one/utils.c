@@ -20,6 +20,7 @@ void	print_new_status(t_philo *philo, char *id, int msg_code, char *buf)
 	long	timestamp;
 
 	memset(buf, 0, STAT_BUF_LEN);
+	pthread_mutex_lock(&(philo->env->mtx_output));
 	timestamp = get_timestamp(philo->time_start);
 	tmp_str_timestamp = ft_itoa((int)timestamp);
 	ft_strlcpy(buf, tmp_str_timestamp, STAT_BUF_LEN);
@@ -36,22 +37,20 @@ void	print_new_status(t_philo *philo, char *id, int msg_code, char *buf)
 	else if (msg_code == THINKING)
 		ft_strlcat(buf, " is thinking\n", STAT_BUF_LEN);
 	if (philo->env->living == DEAD && philo->state != DIED)
+	{
+		pthread_mutex_unlock(&(philo->env->mtx_output));
 		return ;
+	}
 	write(1, buf, STAT_BUF_LEN);
+	pthread_mutex_unlock(&(philo->env->mtx_output));
 }
 
-int		am_i_dead(t_philo *philo, long time_stamp)
+int		am_i_dead(t_philo *philo)
 {
-	long	fresh_time_stamp;
+	long	timestamp;
 
-	if (time_stamp < 0)
-	{
-		fresh_time_stamp = get_timestamp(philo->time_start);
-		philo->timestamp = fresh_time_stamp;
-	}
-	else
-		fresh_time_stamp = time_stamp;
-	if ((fresh_time_stamp - philo->last_lunch) > (long)philo->env->ttd)
+	timestamp = get_timestamp(philo->time_start);
+	if ((timestamp - philo->last_lunch) > (long)philo->env->ttd)
 	{
 		if (philo->env->living == ALL_ALIVE)
 		{
@@ -59,9 +58,9 @@ int		am_i_dead(t_philo *philo, long time_stamp)
 			philo->state = DIED;
 		}
 		else
-			return (YES_IM_SORRY);
+			return (DEAD);
 		print_new_status(philo, philo->str_id, DIED, philo->status_buf);
-		return (YES_IM_SORRY);
+		return (DEAD);
 	}
 	else
 		return (NOT_YET);
