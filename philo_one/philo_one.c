@@ -9,7 +9,7 @@ int	launch_thread(t_env *env, pthread_t *thread, t_philo *philo)
 	i = -1;
 	while (++i < env->philo_nb)
 	{
-		usleep(40);
+		//usleep(40);
 		philo[i].time_start = start_time_value;
 		pthread_create(&(thread[i]), NULL, routine, &(philo[i]));
 	}

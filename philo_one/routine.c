@@ -21,7 +21,7 @@ int		try_to_take_forks(t_philo *philo)
 				philo->status_buf);
 			return (EATING);
 		}
-		usleep(100);
+		usleep(1000);
 	}
 	return (DEAD);
 }
@@ -69,7 +69,7 @@ void	*routine(void *arg)
 	print_new_status(philo, philo->str_id, THINKING, philo->status_buf);
 	philo->last_lunch = get_timestamp(philo->time_start);
 	if (philo->id % 2 == 0)
-		usleep(1000);
+		usleep(2000);
 	while (philo->env->living == ALL_ALIVE && philo->state != DEAD)
 	{
 		if (wanna_eat(philo) == DEAD)
