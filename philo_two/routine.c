@@ -6,52 +6,51 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 19:41:58 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 00:17:53 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-static int	take_forks(t_philo *philo, int *living)
+static int	take_forks(t_philo *philo, int *living, int *fork_lock,
+				int *available_forks)
 {
-	pthread_mutex_t	*take_forks;
-
-	take_forks = &(philo->env->mtx_take_forks);
-	if (mtx_handler(LOCK, take_forks, living) == FAIL)
-		return (DEAD);
-	if (*(philo->right_fork) == USED)
+	sem_wait(philo->env->sem_handle_forks);
+	*fork_lock = LOCK;
+	if (*available_forks < 2)
 	{
-		if (mtx_handler(UNLOCK, take_forks, living) == FAIL)
-			return (DEAD);
+		sem_post(philo->env->sem_handle_forks);
+		*fork_lock = UNLOCK;
 		return (CONTINUE);
 	}
-	if (mtx_handler(LOCK, philo->mtx_rfork, living) == FAIL)
-		return (DEAD);
-	*(philo->right_fork) = USED;
+	sem_wait(philo->env->sem_forks);
+	*available_forks -= 1;
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
-	if (mtx_handler(LOCK, philo->mtx_lfork, living) == FAIL)
-		return (DEAD);
-	*(philo->left_fork) = USED;
-	if (mtx_handler(UNLOCK, take_forks, living) == FAIL)
-		return (DEAD);
+	sem_wait(philo->env->sem_forks);
+	*available_forks -= 1;
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
+	sem_post(philo->env->sem_handle_forks);
+	*fork_lock = UNLOCK;
 	return (EATING);
 }
 
 static int	try_to_take_forks(t_philo *philo)
 {
-	int				ret;
-	int				*living;
+	int		ret;
+	int		*available_forks;
+	int		*fork_lock;
+	int		*living;
 
 	living = &(philo->env->living);
+	available_forks = &(philo->env->available_forks_nb);
+	fork_lock = &(philo->env->fork_lock);
 	while (*living == ALL_ALIVE)
 	{
 		if (am_i_dead(philo) == DEAD)
 			return (DEAD);
-		if (*(philo->right_fork) == AVAILABLE
-			&& *(philo->left_fork) == AVAILABLE)
+		if (*fork_lock == UNLOCK && *available_forks > 1)
 		{
-			ret = take_forks(philo, living);
+			ret = take_forks(philo, living, fork_lock, available_forks);
 			if (ret == EATING)
 				return (EATING);
 			else if (ret == DEAD)
@@ -64,16 +63,12 @@ static int	try_to_take_forks(t_philo *philo)
 	return (DEAD);
 }
 
-/*
-** Dangers : le thread s'arrête en attendant que le mutex soit libre
-** donc si un autre thread meurt, comment dire à celui ci d'arrêter d'attendre
-** et de quitter ?
-*/
-
 static int	wanna_eat(t_philo *philo)
 {
-	int	*living;
+	int		*available_forks;
+	int		*living;
 
+	available_forks = &(philo->env->available_forks_nb);
 	living = &(philo->env->living);
 	philo->state = try_to_take_forks(philo);
 	if (philo->state != EATING)
@@ -81,12 +76,9 @@ static int	wanna_eat(t_philo *philo)
 	print_new_status(philo, philo->str_id, " is eating\n");
 	philo->last_lunch = get_timestamp(philo->time_start);
 	philo->state = sleep_but_listen(philo, philo->env->tte);
-	*(philo->right_fork) = AVAILABLE;
-	if (mtx_handler(UNLOCK, philo->mtx_rfork, living) == FAIL)
-		return (DEAD);
-	*(philo->left_fork) = AVAILABLE;
-	if (mtx_handler(UNLOCK, philo->mtx_lfork, living) == FAIL)
-		return (DEAD);
+	sem_post(philo->env->sem_forks);
+	sem_post(philo->env->sem_forks);
+	*available_forks += 2;
 	if (philo->env->living == DEAD || philo->state == DEAD)
 		return (DEAD);
 	philo->state = SLEEPING;
@@ -116,7 +108,7 @@ void		*routine(void *arg)
 	meal_nb = &(philo->meal_nb);
 	max_meal = &(philo->env->max_meal);
 	if (philo->id % 2 == 0)
-		usleep(8000);
+		usleep(500 * philo->env->tte);
 	print_new_status(philo, philo->str_id, " is thinking\n");
 	philo->last_lunch = get_timestamp(philo->time_start);
 	while (philo->env->living == ALL_ALIVE && philo->state != DEAD)
