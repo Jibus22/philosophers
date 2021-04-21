@@ -43,6 +43,7 @@
 */
 
 # define FAIL_INIT -1
+# define FAIL_DESTROY -2
 # define STAT_BUF_LEN 30
 # define CONTINUE 4242
 # define SUCCESS 1
@@ -109,7 +110,7 @@ long				get_timestamp(struct timeval tv_start);
 ** utils
 */
 
-int					main_exit(t_philo *philo, t_env *env,
+int					destroy_exit(t_philo *philo, t_env *env,
 				pthread_t *thread, pthread_mutex_t *mutex);
 int					mtx_handler(int code, pthread_mutex_t *mtx, int *living);
 

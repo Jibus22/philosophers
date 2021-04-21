@@ -25,26 +25,16 @@ int	exit_thread(t_env *env, pthread_t *thread, pthread_mutex_t *mutex)
 
 	i = -1;
 	while (++i < env->philo_nb)
-		pthread_join(thread[i], NULL);
+		if (pthread_join(thread[i], NULL))
+			return (FAIL_DESTROY);
 	i = -1;
 	while (++i < env->philo_nb)
-	{
 		if (pthread_mutex_destroy(&(mutex[i])))
-		{
-			printf("wwooops\n");
-			return (FAIL_INIT);
-		}
-	}
+			return (FAIL_DESTROY);
 	if (pthread_mutex_destroy(&(env->mtx_take_forks)))
-	{
-		printf("wwooops_mtxtakeforks\n");
-		return (FAIL_INIT);
-	}
+		return (FAIL_DESTROY);
 	if (pthread_mutex_destroy(&(env->mtx_output)))
-	{
-		printf("wwooops_mtxoutput\n");
-		return (FAIL_INIT);
-	}
+		return (FAIL_DESTROY);
 	return (0);
 }
 
@@ -57,14 +47,14 @@ int	main(int ac, char *av[])
 
 	set_struct_null(&philo, &env, &thread, &mutex);
 	if (main_init(&philo, &env, ac, av) == FAIL_INIT)
-		return (main_exit(philo, env, thread, mutex));
+		return (destroy_exit(philo, env, thread, mutex));
 	if (thread_mutex_init(env, &thread, &mutex) == FAIL_INIT)
-		return (main_exit(philo, env, thread, mutex));
+		return (destroy_exit(philo, env, thread, mutex));
 	if (philo_init(philo, env, mutex) == FAIL_INIT)
-		return (main_exit(philo, env, thread, mutex));
+		return (destroy_exit(philo, env, thread, mutex));
 	launch_thread(env, thread, philo);
 	exit_thread(env, thread, mutex);
-	free(thread);
+	destroy_exit(philo, env, thread, mutex);
 	return (0);
 }
 

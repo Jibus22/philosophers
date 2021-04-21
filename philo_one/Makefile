@@ -12,9 +12,15 @@ INC = $(addprefix -I , $(PATH_INCLUDE))
 ##### FLAG #####
 PTHREAD_LIB = -lpthread
 
-##### FLAG #####
+##### COMPILER #####
 CC = clang
+##### COMPILATION OPTION #####
+SANITIZE = -g -fsanitize=address
+##### COMPILATION FLAG #####
 FLAGS = -Wall -Wextra -Werror
+SAN_COMP = -fno-omit-frame-pointer
+##### LINKING FLAG #####
+SAN_LINK = 
 
 
 ##### OSTYPE #####
@@ -47,7 +53,7 @@ mk_objdir:
 
 $(NAME) : message $(OBJ)
 	@echo "\n$(END)$(BLUE)# Making $(NAME) #$(END)$(GREY)"
-	$(CC) -o $@ $(OBJ) $(PTHREAD_LIB)
+	$(CC) -o $@ $(SAN_LINK) $(OBJ) $(PTHREAD_LIB)
 	@echo "\n$(END)$(GREEN)# $(NAME) is built #$(END)"
 
 message :
@@ -58,8 +64,15 @@ $(OBJPATH)/%.o : $(SRCPATH)/%.c $(HEADERS)
 	$(CC) $(FLAGS) $(INC) -c $< -o $@
 
 
+### DEBUG ###
+
+sanitize : FLAGS += $(SANITIZE) $(SAN_COMP)
+sanitize :  SAN_LINK += $(SANITIZE)
+sanitize : all
+
+
 ### CLEAN ###
-.PHONY : clean fclean re
+.PHONY : sanitize clean fclean re
 
 clean :
 	@echo "$(END)$(RED)# removing $(NAME) objects #$(END)$(GREY)"
