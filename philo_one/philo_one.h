@@ -20,10 +20,8 @@
 # define DIED 4
 # define THINKING 5
 
-# define STAT_BUF_LEN 30
-
-# define ALL_ALIVE 1
-# define DEAD 0
+# define ALL_ALIVE 21
+# define DEAD 42
 # define NOT_YET 1
 
 /*
@@ -33,6 +31,22 @@
 # define AVAILABLE 1
 # define USED 2
 
+/*
+** mutex handling
+*/
+
+# define LOCK 0
+# define UNLOCK 1
+
+/*
+** other
+*/
+
+# define FAIL_INIT -1
+# define STAT_BUF_LEN 30
+# define CONTINUE 4242
+# define SUCCESS 1
+# define FAIL -1
 
 /*
 ** philo data structures
@@ -44,8 +58,10 @@ typedef struct		s_env
 	int				ttd;
 	int				tte;
 	int				tts;
+	int				max_meal;
 	int				living;
 	char			*forks;
+	pthread_mutex_t	mtx_take_forks;
 	pthread_mutex_t	mtx_output;
 }					t_env;
 
@@ -59,9 +75,9 @@ typedef struct		s_philo
 	int				id;
 	char			str_id[6];
 	int				state;
-	char			status_buf[30];
 	struct timeval	time_start;
 	long			last_lunch;
+	int				meal_nb;
 }					t_philo;
 
 /*
@@ -75,7 +91,7 @@ int					main_init(t_philo **philo, t_env **env, int ac, char *av[]);
 int					thread_mutex_init(t_env *env, pthread_t **thread,
 				pthread_mutex_t **mutex);
 
-void				philo_init(t_philo *philo, t_env *env,
+int					philo_init(t_philo *philo, t_env *env,
 				pthread_mutex_t *mutex);
 
 /*
@@ -86,8 +102,7 @@ void				*routine(void *arg);
 int					sleep_but_listen(t_philo *philo, int duration);
 int					am_i_dead(t_philo *philo);
 
-void				print_new_status(t_philo *philo, char *id,
-				int msg_code, char *buf);
+int					print_new_status(t_philo *philo, char *id, char *status);
 long				get_timestamp(struct timeval tv_start);
 
 /*
@@ -96,6 +111,7 @@ long				get_timestamp(struct timeval tv_start);
 
 int					main_exit(t_philo *philo, t_env *env,
 				pthread_t *thread, pthread_mutex_t *mutex);
+int					mtx_handler(int code, pthread_mutex_t *mtx, int *living);
 
 size_t				ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t				ft_strlcat(char *dst, const char *src, size_t dstsize);
