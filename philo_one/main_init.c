@@ -70,6 +70,6 @@ int			main_init(t_philo **philo, t_env **env, int ac, char *av[])
 	*philo = (t_philo *)malloc(sizeof(t_philo) * (*env)->philo_nb);
 	if (!*philo)
 		return (FAIL_INIT);
-	memset(*philo, 0, sizeof(**philo));
+	memset(*philo, 0, (sizeof(**philo) * (*env)->philo_nb));
 	return (0);
 }

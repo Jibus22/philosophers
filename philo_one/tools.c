@@ -1,6 +1,6 @@
 #include "philo_one.h"
 
-int	print_thread(t_env *env, pthread_t *thread)
+int		print_thread(t_env *env, pthread_t *thread)
 {
 	int	i;
 

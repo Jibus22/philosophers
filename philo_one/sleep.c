@@ -14,7 +14,7 @@ int			micro_sleep(t_philo *philo, long end)
 }
 
 int			sleep_but_listen(t_philo *philo, int duration)
-{	
+{
 	long	timestamp;
 	long	time_end;
 	int		first_part;

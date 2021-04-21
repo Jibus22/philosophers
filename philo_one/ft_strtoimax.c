@@ -31,5 +31,5 @@ int	ft_strtoimax(const char *str, char **endptr)
 	if (neg)
 		return ((int)(-nbr));
 	else
-		return ((int) nbr);
+		return ((int)nbr);
 }
