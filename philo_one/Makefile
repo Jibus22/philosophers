@@ -37,7 +37,7 @@ endif
 SRCS = $(addprefix $(SRCPATH)/, philo_one.c ft_strtoimax.c ft_isspace.c \
 	   ft_isdigit.c tools.c initialization.c exit.c ft_strnew.c ft_pow.c \
 	   ft_itoa.c ft_strlcpy.c ft_strlen.c ft_strlcat.c sleep.c utils.c \
-	   routine.c main_init.c)
+	   routine.c main_init.c utils_2.c)
 
 OBJ = $(SRCS:$(SRCPATH)/%.c=$(OBJPATH)/%.o)
 

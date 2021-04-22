@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:57:22 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 14:17:25 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,20 +75,4 @@ int		am_i_dead(t_philo *philo)
 	}
 	else
 		return (NOT_YET);
-}
-
-int		mtx_handler(int code, pthread_mutex_t *mtx, int *living)
-{
-	int	ret;
-
-	ret = SUCCESS;
-	if (code == LOCK)
-		if (pthread_mutex_lock(mtx))
-			ret = FAIL;
-	if (code == UNLOCK)
-		if (pthread_mutex_unlock(mtx))
-			ret = FAIL;
-	if (ret == FAIL)
-		*living = DEAD;
-	return (ret);
 }

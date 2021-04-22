@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 19:41:58 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 14:16:22 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,14 @@ static int	wanna_eat(t_philo *philo)
 	philo->state = try_to_take_forks(philo);
 	if (philo->state != EATING)
 		return (DEAD);
-	print_new_status(philo, philo->str_id, " is eating\n");
-	philo->last_lunch = get_timestamp(philo->time_start);
-	philo->state = sleep_but_listen(philo, philo->env->tte);
+	if (*living == ALL_ALIVE)
+	{
+		print_new_status(philo, philo->str_id, " is eating\n");
+		philo->last_lunch = get_timestamp(philo->time_start);
+		philo->state = sleep_but_listen(philo, philo->env->tte);
+	}
+	else
+		return (unlock_both_forks_exit(philo, living));
 	*(philo->right_fork) = AVAILABLE;
 	if (mtx_handler(UNLOCK, philo->mtx_rfork, living) == FAIL)
 		return (DEAD);

@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:55 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:56:57 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 14:15:51 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ long				get_timestamp(struct timeval tv_start);
 int					destroy_exit(t_philo *philo, t_env *env,
 				pthread_t *thread, pthread_mutex_t *mutex);
 int					mtx_handler(int code, pthread_mutex_t *mtx, int *living);
+int					unlock_both_forks_exit(t_philo *philo, int *living);
 
 size_t				ft_strlcpy(char *dst, const char *src, size_t dstsize);
 size_t				ft_strlcat(char *dst, const char *src, size_t dstsize);
