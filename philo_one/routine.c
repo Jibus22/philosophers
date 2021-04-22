@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:16:22 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 14:29:00 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,6 @@ static int	try_to_take_forks(t_philo *philo)
 	}
 	return (DEAD);
 }
-
-/*
-** Dangers : le thread s'arrête en attendant que le mutex soit libre
-** donc si un autre thread meurt, comment dire à celui ci d'arrêter d'attendre
-** et de quitter ?
-*/
 
 static int	wanna_eat(t_philo *philo)
 {
