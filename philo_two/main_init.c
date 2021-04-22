@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:38 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 02:31:14 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 03:06:28 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,15 @@ int			init_semaphores(t_env *env)
 	sem_unlink(env->sem_forks_name);
 	sem_unlink(env->sem_handle_forks_name);
 	sem_unlink(env->sem_output_name);
-	env->sem_forks = sem_open(env->sem_forks_name, O_CREAT , 0700,
+	env->sem_forks = sem_open(env->sem_forks_name, O_CREAT, 0700,
 			env->philo_nb);
 	if (env->sem_forks == SEM_FAILED)
 		return (FAIL_INIT);
 	env->sem_handle_forks = sem_open(env->sem_handle_forks_name,
-		O_CREAT , 0700, 1);
+			O_CREAT, 0700, 1);
 	if (env->sem_handle_forks == SEM_FAILED)
 		return (FAIL_INIT);
-	env->sem_output = sem_open(env->sem_output_name, O_CREAT , 0700, 1);
+	env->sem_output = sem_open(env->sem_output_name, O_CREAT, 0700, 1);
 	if (env->sem_output == SEM_FAILED)
 		return (FAIL_INIT);
 	return (SUCCESS);
