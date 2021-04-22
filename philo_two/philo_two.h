@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:55 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 02:35:09 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 03:08:50 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <limits.h>
+# include <fcntl.h>
 # include <string.h>
 # include <sys/errno.h>
 
