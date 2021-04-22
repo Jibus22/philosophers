@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 16:13:53 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/16 13:50:56 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:04:05 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {

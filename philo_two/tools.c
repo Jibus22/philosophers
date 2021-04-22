@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:14 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:57:15 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:05:36 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int		print_thread(t_env *env, pthread_t *thread)
 {

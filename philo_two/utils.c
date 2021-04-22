@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:57:22 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:02:19 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 long	get_timestamp(struct timeval tv_start)
 {
@@ -30,18 +30,17 @@ void	set_buffer(char *buf, char *timestamp, char *id, char *status)
 
 int		print_new_status(t_philo *philo, char *id, char *status)
 {
-	pthread_mutex_t	*mtx_output;
-	int				*living;
-	char			*tmp_str_timestamp;
-	char			buf[STAT_BUF_LEN];
-	long			timestamp;
+	sem_t	*sem_output;
+	int		*living;
+	char	*tmp_str_timestamp;
+	char	buf[STAT_BUF_LEN];
+	long	timestamp;
 
 	memset(buf, 0, STAT_BUF_LEN);
-	mtx_output = &(philo->env->mtx_output);
+	sem_output = philo->env->sem_output;
 	living = &(philo->env->living);
 	tmp_str_timestamp = NULL;
-	if (mtx_handler(LOCK, mtx_output, living) == FAIL)
-		return (FAIL);
+	sem_wait(sem_output);
 	timestamp = get_timestamp(philo->time_start);
 	tmp_str_timestamp = ft_itoa((int)timestamp);
 	if (!tmp_str_timestamp)
@@ -49,10 +48,12 @@ int		print_new_status(t_philo *philo, char *id, char *status)
 	set_buffer(buf, tmp_str_timestamp, id, status);
 	free(tmp_str_timestamp);
 	if (*living == DEAD && philo->state != DIED)
-		return (mtx_handler(UNLOCK, mtx_output, living));
-	write(1, buf, STAT_BUF_LEN);
-	if (mtx_handler(UNLOCK, mtx_output, living) == FAIL)
+	{
+		sem_post(sem_output);
 		return (FAIL);
+	}
+	write(1, buf, STAT_BUF_LEN);
+	sem_post(sem_output);
 	return (SUCCESS);
 }
 

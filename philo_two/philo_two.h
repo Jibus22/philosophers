@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:55 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 22:36:39 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 02:35:09 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,12 @@ typedef struct		s_env
 	int				tts;
 	int				max_meal;
 	int				living;
-	int				available_forks_nb;
 	int				fork_lock;
-	char			sem_forks_name[15];
+	char			sem_forks_name[30];
 	sem_t			*sem_forks;
-	char			sem_handle_forks_name[16];
+	char			sem_handle_forks_name[30];
 	sem_t			*sem_handle_forks;
-	char			sem_output_name[15];
+	char			sem_output_name[30];
 	sem_t			*sem_output;
 }					t_env;
 
@@ -94,7 +93,6 @@ typedef struct		s_philo
 	long			last_lunch;
 	int				meal_nb;
 	sem_t			*sem_forks;
-	sem_t			*sem_output;
 }					t_philo;
 
 /*

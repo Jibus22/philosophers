@@ -6,28 +6,19 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 00:17:53 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 02:34:24 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
-static int	take_forks(t_philo *philo, int *living, int *fork_lock,
-				int *available_forks)
+static int	take_forks(t_philo *philo, int *fork_lock)
 {
 	sem_wait(philo->env->sem_handle_forks);
 	*fork_lock = LOCK;
-	if (*available_forks < 2)
-	{
-		sem_post(philo->env->sem_handle_forks);
-		*fork_lock = UNLOCK;
-		return (CONTINUE);
-	}
-	sem_wait(philo->env->sem_forks);
-	*available_forks -= 1;
+	sem_wait(philo->sem_forks);
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
-	sem_wait(philo->env->sem_forks);
-	*available_forks -= 1;
+	sem_wait(philo->sem_forks);
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
 	sem_post(philo->env->sem_handle_forks);
 	*fork_lock = UNLOCK;
@@ -37,26 +28,22 @@ static int	take_forks(t_philo *philo, int *living, int *fork_lock,
 static int	try_to_take_forks(t_philo *philo)
 {
 	int		ret;
-	int		*available_forks;
 	int		*fork_lock;
 	int		*living;
 
 	living = &(philo->env->living);
-	available_forks = &(philo->env->available_forks_nb);
 	fork_lock = &(philo->env->fork_lock);
 	while (*living == ALL_ALIVE)
 	{
 		if (am_i_dead(philo) == DEAD)
 			return (DEAD);
-		if (*fork_lock == UNLOCK && *available_forks > 1)
+		if (*fork_lock == UNLOCK)
 		{
-			ret = take_forks(philo, living, fork_lock, available_forks);
+			ret = take_forks(philo, fork_lock);
 			if (ret == EATING)
 				return (EATING);
 			else if (ret == DEAD)
 				return (DEAD);
-			else
-				continue ;
 		}
 		usleep(10);
 	}
@@ -65,10 +52,8 @@ static int	try_to_take_forks(t_philo *philo)
 
 static int	wanna_eat(t_philo *philo)
 {
-	int		*available_forks;
 	int		*living;
 
-	available_forks = &(philo->env->available_forks_nb);
 	living = &(philo->env->living);
 	philo->state = try_to_take_forks(philo);
 	if (philo->state != EATING)
@@ -76,9 +61,8 @@ static int	wanna_eat(t_philo *philo)
 	print_new_status(philo, philo->str_id, " is eating\n");
 	philo->last_lunch = get_timestamp(philo->time_start);
 	philo->state = sleep_but_listen(philo, philo->env->tte);
-	sem_post(philo->env->sem_forks);
-	sem_post(philo->env->sem_forks);
-	*available_forks += 2;
+	sem_post(philo->sem_forks);
+	sem_post(philo->sem_forks);
 	if (philo->env->living == DEAD || philo->state == DEAD)
 		return (DEAD);
 	philo->state = SLEEPING;

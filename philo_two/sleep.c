@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:08 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:57:08 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:05:19 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int			micro_sleep(t_philo *philo, long end)
 {

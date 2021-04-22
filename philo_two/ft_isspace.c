@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:55:09 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:55:10 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:03:28 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int	ft_isspace(int c)
 {

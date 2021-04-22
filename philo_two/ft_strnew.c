@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/20 15:58:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/16 12:54:36 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 01:04:40 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 char	*ft_strnew(int size)
 {

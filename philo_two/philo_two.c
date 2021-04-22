@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:49 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 21:25:24 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 02:38:29 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int	launch_thread(t_env *env, pthread_t *thread, t_philo *philo)
 {
@@ -39,7 +39,12 @@ int	exit_thread(t_env *env, pthread_t *thread)
 	while (++i < env->philo_nb)
 		if (pthread_join(thread[i], NULL))
 			return (FAIL_DESTROY);
-	i = -1;
+	sem_unlink(env->sem_forks_name);
+	sem_unlink(env->sem_handle_forks_name);
+	sem_unlink(env->sem_output_name);
+	sem_close(env->sem_forks);
+	sem_close(env->sem_handle_forks);
+	sem_close(env->sem_output);
 	return (0);
 }
 

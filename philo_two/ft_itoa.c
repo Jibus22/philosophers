@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 16:16:32 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:48:06 by user42           ###   ########.fr       */
+/*   Updated: 2021/04/22 01:03:37 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 static int	count_cell(int n)
 {

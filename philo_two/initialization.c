@@ -6,11 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:06 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 21:44:46 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/22 02:35:05 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo_one.h"
+#include "philo_two.h"
 
 int			thread_init(t_env *env, pthread_t **thread)
 {
@@ -39,8 +39,7 @@ int			philo_init(t_philo *philo, t_env *env)
 		ft_strlcpy(&(philo_cpy->str_id[1]), temp_id, 5);
 		free(temp_id);
 		philo_cpy->state = THINKING;
-		philo_cpy->sem_fork = env->sem_fork;
-		philo_cpy->sem_output = env->sem_output;
+		philo_cpy->sem_forks = env->sem_forks;
 	}
 	return (0);
 }
