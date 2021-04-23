@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/23 17:13:26 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 19:05:13 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int		am_i_dead(t_philo *philo)
 		return (NOT_YET);
 }
 
-void		*dead_snitch(void *arg)
+void	*dead_snitch(void *arg)
 {
 	t_philo *philo;
 
