@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/23 11:53:46 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 13:08:12 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static int	go_to_sleep(t_philo *philo)
 	return (THINKING);
 }
 
-int		routine(t_philo *philo)
+int			routine(t_philo *philo)
 {
 	int		*meal_nb;
 	int		*max_meal;
