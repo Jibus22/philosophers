@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/23 13:08:12 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 17:13:17 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,12 @@ static int	go_to_sleep(t_philo *philo)
 
 int			routine(t_philo *philo)
 {
-	int		*meal_nb;
-	int		*max_meal;
+	int			*meal_nb;
+	int			*max_meal;
+	pthread_t	thread;
 
+	pthread_create(&thread, NULL, dead_snitch, philo);
+	pthread_detach(thread);
 	meal_nb = &(philo->meal_nb);
 	max_meal = &(philo->env->max_meal);
 	if (philo->id % 2 == 0)

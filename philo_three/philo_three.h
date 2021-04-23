@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 14:38:48 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/23 09:16:02 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 17:13:46 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ int					am_i_dead(t_philo *philo);
 
 int					print_new_status(t_philo *philo, char *id, char *status);
 long				get_timestamp(struct timeval tv_start);
+void				*dead_snitch(void *arg);
 
 /*
 ** utils
