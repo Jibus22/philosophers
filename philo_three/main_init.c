@@ -6,17 +6,16 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:38 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:42:00 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 10:35:44 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_three.h"
 
-void		set_struct_null(t_philo **philo, t_env **env, pthread_t **thread)
+void		set_struct_null(t_philo **philo, t_env **env)
 {
 	*philo = NULL;
 	*env = NULL;
-	*thread = NULL;
 }
 
 static int	init_arguments(t_env *env, char *av[], int arg_nb)
@@ -68,10 +67,13 @@ static int	init_env(int ac, char *av[], t_env *env)
 		return (FAIL_INIT);
 	if (ac == 6 && env->max_meal < 1)
 		return (FAIL_INIT);
-	env->living = ALL_ALIVE;
 	if (env->philo_nb == 0)
 		return (FAIL_INIT);
 	if (init_semaphores(env) == FAIL_INIT)
+		return (FAIL_INIT);
+	env->c_pid = (pid_t *)malloc(sizeof(pid_t) * env->philo_nb);
+	memset(env->c_pid, 0, sizeof(pid_t) * env->philo_nb);
+	if (env->c_pid == NULL)
 		return (FAIL_INIT);
 	return (0);
 }

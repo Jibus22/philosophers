@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/22 14:38:48 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:52:29 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 09:16:02 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,8 @@ typedef struct		s_env
 	int				tte;
 	int				tts;
 	int				max_meal;
-	int				living;
 	int				fork_lock;
+	pid_t			*c_pid;
 	char			sem_forks_name[30];
 	sem_t			*sem_forks;
 	char			sem_handle_forks_name[30];
@@ -102,11 +102,8 @@ typedef struct		s_philo
 ** init
 */
 
-void				set_struct_null(t_philo **philo, t_env **env,
-				pthread_t **thread);
+void				set_struct_null(t_philo **philo, t_env **env);
 int					main_init(t_philo **philo, t_env **env, int ac, char *av[]);
-
-int					thread_init(t_env *env, pthread_t **thread);
 
 int					philo_init(t_philo *philo, t_env *env);
 
@@ -114,7 +111,7 @@ int					philo_init(t_philo *philo, t_env *env);
 ** run
 */
 
-void				*routine(void *arg);
+int					routine(t_philo *philo);
 int					sleep_but_listen(t_philo *philo, int duration);
 int					am_i_dead(t_philo *philo);
 
@@ -125,7 +122,7 @@ long				get_timestamp(struct timeval tv_start);
 ** utils
 */
 
-int					destroy_exit(t_philo *philo, t_env *env, pthread_t *thread);
+int					destroy_exit(t_philo *philo, t_env *env);
 int					mtx_handler(int code, pthread_mutex_t *mtx, int *living);
 
 size_t				ft_strlcpy(char *dst, const char *src, size_t dstsize);

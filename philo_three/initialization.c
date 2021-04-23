@@ -6,19 +6,11 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:06 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:41:51 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 00:25:16 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_three.h"
-
-int			thread_init(t_env *env, pthread_t **thread)
-{
-	*thread = (pthread_t *)malloc(sizeof(pthread_t) * env->philo_nb);
-	if (!*thread)
-		return (FAIL_INIT);
-	return (0);
-}
 
 int			philo_init(t_philo *philo, t_env *env)
 {

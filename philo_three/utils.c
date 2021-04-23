@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:43:10 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 11:58:23 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,12 @@ void	set_buffer(char *buf, char *timestamp, char *id, char *status)
 int		print_new_status(t_philo *philo, char *id, char *status)
 {
 	sem_t	*sem_output;
-	int		*living;
 	char	*tmp_str_timestamp;
 	char	buf[STAT_BUF_LEN];
 	long	timestamp;
 
 	memset(buf, 0, STAT_BUF_LEN);
 	sem_output = philo->env->sem_output;
-	living = &(philo->env->living);
 	tmp_str_timestamp = NULL;
 	sem_wait(sem_output);
 	timestamp = get_timestamp(philo->time_start);
@@ -47,13 +45,9 @@ int		print_new_status(t_philo *philo, char *id, char *status)
 		return (FAIL);
 	set_buffer(buf, tmp_str_timestamp, id, status);
 	free(tmp_str_timestamp);
-	if (*living == DEAD && philo->state != DIED)
-	{
-		sem_post(sem_output);
-		return (FAIL);
-	}
 	write(1, buf, STAT_BUF_LEN);
-	sem_post(sem_output);
+	if (philo->state != DEAD)
+		sem_post(sem_output);
 	return (SUCCESS);
 }
 
@@ -62,34 +56,12 @@ int		am_i_dead(t_philo *philo)
 	long	timestamp;
 
 	timestamp = get_timestamp(philo->time_start);
-	if ((timestamp - philo->last_lunch) > (long)philo->env->ttd)
+	if ((timestamp - philo->last_lunch) >= (long)philo->env->ttd)
 	{
-		if (philo->env->living == ALL_ALIVE)
-		{
-			philo->env->living = DEAD;
-			philo->state = DIED;
-		}
-		else
-			return (DEAD);
+		philo->state = DEAD;
 		print_new_status(philo, philo->str_id, " has died\n");
 		return (DEAD);
 	}
 	else
 		return (NOT_YET);
-}
-
-int		mtx_handler(int code, pthread_mutex_t *mtx, int *living)
-{
-	int	ret;
-
-	ret = SUCCESS;
-	if (code == LOCK)
-		if (pthread_mutex_lock(mtx))
-			ret = FAIL;
-	if (code == UNLOCK)
-		if (pthread_mutex_unlock(mtx))
-			ret = FAIL;
-	if (ret == FAIL)
-		*living = DEAD;
-	return (ret);
 }
