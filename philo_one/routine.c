@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:29:00 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 13:59:08 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void		*routine(void *arg)
 	meal_nb = &(philo->meal_nb);
 	max_meal = &(philo->env->max_meal);
 	if (philo->id % 2 == 0)
-		usleep(8000);
+		usleep(500 * philo->env->tte);
 	print_new_status(philo, philo->str_id, " is thinking\n");
 	philo->last_lunch = get_timestamp(philo->time_start);
 	while (philo->env->living == ALL_ALIVE && philo->state != DEAD)

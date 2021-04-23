@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:08 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:57:08 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 13:59:22 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int			sleep_but_listen(t_philo *philo, int duration)
 		time_end = philo->last_lunch + (long)philo->env->ttd;
 		duration = (int)time_end - (int)timestamp;
 	}
-	first_part = duration * 90 / 100;
+	first_part = duration * 80 / 100;
 	usleep(first_part * 1000);
 	micro_sleep(philo, time_end);
 	if (am_i_dead(philo) == DEAD || philo->env->living == DEAD)
