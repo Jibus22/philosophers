@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:49 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/21 14:56:50 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 14:03:20 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,3 @@ int	main(int ac, char *av[])
 	destroy_exit(philo, env, thread, mutex);
 	return (0);
 }
-
-/*
-
-	print_env(env);
-	print_thread(env, thread);
-	system("leaks philo_one");
-*/
