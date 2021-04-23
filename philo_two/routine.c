@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:02 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 14:30:08 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 16:40:46 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,17 @@
 
 static int	take_forks(t_philo *philo, int *fork_lock)
 {
-	sem_wait(philo->env->sem_handle_forks);
-	*fork_lock = LOCK;
+	if (*fork_lock == UNLOCK && philo->env->incrementator > 1)
+	{
+		sem_wait(philo->env->sem_handle_forks);
+		*fork_lock = LOCK;
+	}
+	else
+		return (CONTINUE);
+	philo->env->incrementator -= 2;
+	sem_wait(philo->sem_forks);
 	sem_wait(philo->sem_forks);
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
-	sem_wait(philo->sem_forks);
 	print_new_status(philo, philo->str_id, " has taken a fork\n");
 	sem_post(philo->env->sem_handle_forks);
 	*fork_lock = UNLOCK;
@@ -30,14 +36,16 @@ static int	try_to_take_forks(t_philo *philo)
 	int		ret;
 	int		*fork_lock;
 	int		*living;
+	int		*incrementator;
 
 	living = &(philo->env->living);
 	fork_lock = &(philo->env->fork_lock);
+	incrementator = &(philo->env->incrementator);
 	while (*living == ALL_ALIVE)
 	{
 		if (am_i_dead(philo) == DEAD)
 			return (DEAD);
-		if (*fork_lock == UNLOCK)
+		if (*fork_lock == UNLOCK && *incrementator > 1)
 		{
 			ret = take_forks(philo, fork_lock);
 			if (ret == EATING)
@@ -66,6 +74,7 @@ static int	wanna_eat(t_philo *philo)
 	}
 	sem_post(philo->sem_forks);
 	sem_post(philo->sem_forks);
+	philo->env->incrementator += 2;
 	if (*living == DEAD || philo->state == DEAD)
 		return (DEAD);
 	philo->state = SLEEPING;

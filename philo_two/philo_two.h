@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:55 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 03:08:50 by user42           ###   ########.fr       */
+/*   Updated: 2021/04/23 16:28:46 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ typedef struct		s_env
 	int				max_meal;
 	int				living;
 	int				fork_lock;
+	int				incrementator;
 	char			sem_forks_name[30];
 	sem_t			*sem_forks;
 	char			sem_handle_forks_name[30];

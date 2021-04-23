@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:56:38 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 03:06:28 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 16:29:50 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static int	init_env(int ac, char *av[], t_env *env)
 		return (FAIL_INIT);
 	if (init_semaphores(env) == FAIL_INIT)
 		return (FAIL_INIT);
+	env->incrementator = env->philo_nb;
 	return (0);
 }
 

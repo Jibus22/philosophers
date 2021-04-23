@@ -6,7 +6,7 @@
 /*   By: jle-corr <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/21 14:57:21 by jle-corr          #+#    #+#             */
-/*   Updated: 2021/04/22 01:02:19 by jle-corr         ###   ########.fr       */
+/*   Updated: 2021/04/23 16:25:29 by jle-corr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int		am_i_dead(t_philo *philo)
 	long	timestamp;
 
 	timestamp = get_timestamp(philo->time_start);
-	if ((timestamp - philo->last_lunch) > (long)philo->env->ttd)
+	if ((timestamp - philo->last_lunch) >= (long)philo->env->ttd)
 	{
 		if (philo->env->living == ALL_ALIVE)
 		{
